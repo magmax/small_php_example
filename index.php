@@ -9,13 +9,18 @@
 <?php
 $dbname = 'mysql';
 
-if (!mysql_connect('localhost', 'root', 'secret')) {
+$server = getenv('MYSQL_SERVER') ?: 'localhost';
+$user = getenv('MYSQL_USER') ?: 'root';
+$pass = getenv('MYSQL_PASSWORD') ?: 'secret';
+
+$mysqli = mysqli_connect($server, 'root', 'secret');
+if ($mysqli->connect_errno) {
     echo 'Could not connect to mysql';
     exit;
 }
 
 $sql = "SHOW TABLES FROM $dbname";
-$result = mysql_query($sql);
+$result = $mysqli->query($sql);
 
 if (!$result) {
     echo "DB Error, could not list tables\n";
@@ -23,15 +28,14 @@ if (!$result) {
     exit;
 }
 
-while ($row = mysql_fetch_row($result)) {
+while ($row = $result->fetch_row()) {
     echo "<li>Table: {$row[0]}</li>\n";
 }
 
-mysql_free_result($result);
+mysqli_free_result($result);
 
 ?>
 
 </ul>
 </body>
 </html>
-
